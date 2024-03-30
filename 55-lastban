@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Path to the Fail2ban log file
+LOG_FILE="/var/log/fail2ban.log"
+
+# Function to find the last banned IP address from Fail2ban log
+find_last_banned_ip() {
+    local last_banned_ip
+    last_banned_ip=$(grep "Ban " "$LOG_FILE" | awk '{print $NF}' | tail -n 1)
+    echo "$last_banned_ip"
+}
+
+# Main function
+main() {
+    if [ ! -f "$LOG_FILE" ]; then
+        echo "Fail2ban log file not found: $LOG_FILE"
+        exit 1
+    fi
+
+    last_banned_ip=$(find_last_banned_ip)
+    if [ -z "$last_banned_ip" ]; then
+        echo "No banned IP addresses found in Fail2ban log."
+    else
+        echo "Last banned IP address: $last_banned_ip"
+    fi
+}
+
+# Call main function
+main
+echo ""
